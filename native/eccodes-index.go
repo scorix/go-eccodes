@@ -6,9 +6,8 @@ package native
 import "C"
 
 import (
+	"errors"
 	"unsafe"
-
-	"github.com/amsokol/go-errors"
 )
 
 func Ccodes_index_new_from_file(ctx Ccodes_context, filename string, keys string) (Ccodes_index, error) {

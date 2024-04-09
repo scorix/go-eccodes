@@ -1,8 +1,11 @@
+//go:build linux && amd64
 // +build linux,amd64
 
 package native
 
 /*
+#include <eccodes.h>
+#
 #cgo LDFLAGS: -leccodes -leccodes_memfs -lpng -laec -ljasper -lopenjp2 -lz -lm
 */
 import "C"

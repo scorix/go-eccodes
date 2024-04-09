@@ -5,9 +5,8 @@ package native
 */
 import "C"
 import (
+	"errors"
 	"unsafe"
-
-	"github.com/amsokol/go-errors"
 )
 
 func Ccodes_keys_iterator_new(handle Ccodes_handle, flags int, namespace string) Ccodes_keys_iterator {

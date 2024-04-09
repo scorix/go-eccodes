@@ -5,11 +5,11 @@ package native
 */
 import "C"
 import (
+	"errors"
+	"fmt"
 	"unsafe"
 
-	"github.com/amsokol/go-errors"
-
-	"github.com/amsokol/go-eccodes/debug"
+	"github.com/scorix/go-eccodes/debug"
 )
 
 const MaxStringLength = 1030
@@ -106,10 +106,9 @@ func Ccodes_get_string(handle Ccodes_handle, key string) (string, error) {
 }
 
 func Ccodes_grib_get_data(handle Ccodes_handle) (latitudes []float64, longitudes []float64, values []float64, err error) {
-
 	size, err := Ccodes_get_long(handle, ParameterNumberOfPoints)
 	if err != nil {
-		return nil, nil, nil, errors.Wrapf(err, "failed to get long value of '%s'", ParameterNumberOfPoints)
+		return nil, nil, nil, fmt.Errorf("failed to get long value of '%s': %w", ParameterNumberOfPoints, err)
 	}
 
 	latitudes = make([]float64, size)
@@ -130,10 +129,9 @@ func Ccodes_grib_get_data(handle Ccodes_handle) (latitudes []float64, longitudes
 }
 
 func Ccodes_grib_get_data_unsafe(handle Ccodes_handle) (latitudes unsafe.Pointer, longitudes unsafe.Pointer, values unsafe.Pointer, err error) {
-
 	size, err := Ccodes_get_long(handle, ParameterNumberOfPoints)
 	if err != nil {
-		return nil, nil, nil, errors.Wrapf(err, "failed to get long value of '%s'", ParameterNumberOfPoints)
+		return nil, nil, nil, fmt.Errorf("failed to get long value of '%s': %w", ParameterNumberOfPoints, err)
 	}
 
 	latitudes = Cmalloc(CsizeT(size * SizeOfFloat64))

@@ -1,14 +1,13 @@
 package codes
 
 import (
+	"fmt"
 	"io"
 	"runtime"
 
-	"github.com/amsokol/go-errors"
-
-	"github.com/amsokol/go-eccodes/debug"
-	cio "github.com/amsokol/go-eccodes/io"
-	"github.com/amsokol/go-eccodes/native"
+	"github.com/scorix/go-eccodes/debug"
+	cio "github.com/scorix/go-eccodes/io"
+	"github.com/scorix/go-eccodes/native"
 )
 
 type Reader interface {
@@ -63,7 +62,7 @@ func OpenFileByPathWithFilter(path string, filter map[string]interface{}) (File,
 
 	i, err := native.Ccodes_index_new_from_file(native.DefaultContext, path, k)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to create filtered index")
+		return nil, fmt.Errorf("failed to create filtered index: %w", err)
 	}
 
 	for key, value := range filter {
@@ -73,27 +72,27 @@ func OpenFileByPathWithFilter(path string, filter map[string]interface{}) (File,
 			case int64:
 				err = native.Ccodes_index_select_long(i, key, value.(int64))
 				if err != nil {
-					err = errors.Wrapf(err, "failed to set filter condition '%s'=%d", key, value.(int64))
+					err = fmt.Errorf("failed to set filter condition '%s'=%d: %w", key, value.(int64), err)
 				}
 			case int:
 				err = native.Ccodes_index_select_long(i, key, int64(value.(int)))
 				if err != nil {
-					err = errors.Wrapf(err, "failed to set filter condition '%s'=%d", key, value.(int64))
+					err = fmt.Errorf("failed to set filter condition '%s'=%d: %w", key, value.(int64), err)
 				}
 			case float64:
 				err = native.Ccodes_index_select_double(i, key, value.(float64))
 				if err != nil {
-					err = errors.Wrapf(err, "failed to set filter condition '%s'=%f", key, value.(float64))
+					err = fmt.Errorf("failed to set filter condition '%s'=%f: %w", key, value.(float64), err)
 				}
 			case float32:
 				err = native.Ccodes_index_select_double(i, key, float64(value.(float32)))
 				if err != nil {
-					err = errors.Wrapf(err, "failed to set filter condition '%s'=%f", key, value.(float64))
+					err = fmt.Errorf("failed to set filter condition '%s'=%f: %w", key, value.(float64), err)
 				}
 			case string:
 				err = native.Ccodes_index_select_string(i, key, value.(string))
 				if err != nil {
-					err = errors.Wrapf(err, "failed to set filter condition '%s'='%s'", key, value.(string))
+					err = fmt.Errorf("failed to set filter condition '%s'='%s': %w", key, value.(string), err)
 				}
 			}
 			if err != nil {
@@ -115,7 +114,7 @@ func (f *file) Next() (Message, error) {
 		if err == io.EOF {
 			return nil, err
 		}
-		return nil, errors.Wrap(err, "failed create new handle from file")
+		return nil, fmt.Errorf("failed create new handle from file: %w", err)
 	}
 
 	return newMessage(handle), nil
@@ -135,7 +134,7 @@ func (f *fileIndexed) Next() (Message, error) {
 		if err == io.EOF {
 			return nil, err
 		}
-		return nil, errors.Wrap(err, "failed to create handle from index")
+		return nil, fmt.Errorf("failed to create handle from index: %w", err)
 	}
 
 	return newMessage(handle), nil

@@ -2,15 +2,14 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"io"
 	"log"
 	"runtime/debug"
 	"time"
 
-	"github.com/amsokol/go-errors"
-
-	"github.com/amsokol/go-eccodes"
-	cio "github.com/amsokol/go-eccodes/io"
+	codes "github.com/scorix/go-eccodes"
+	cio "github.com/scorix/go-eccodes/io"
 )
 
 func main() {
@@ -56,11 +55,11 @@ func process(file codes.File, n int) error {
 
 	shortName, err := msg.GetString("shortName")
 	if err != nil {
-		return errors.Wrap(err, "failed to get 'shortName' value")
+		return fmt.Errorf("failed to get 'shortName' value: %w", err)
 	}
 	name, err := msg.GetString("name")
 	if err != nil {
-		return errors.Wrap(err, "failed to get 'name' value")
+		return fmt.Errorf("failed to get 'name' value: %w", err)
 	}
 
 	log.Printf("Variable = [%s](%s)\n", shortName, name)
@@ -68,7 +67,7 @@ func process(file codes.File, n int) error {
 	// just to measure timing
 	_, _, _, err = msg.Data()
 	if err != nil {
-		return errors.Wrap(err, "failed to get data (latitudes, longitudes, values)")
+		return fmt.Errorf("failed to get data (latitudes, longitudes, values): %w", err)
 	}
 
 	log.Printf("elapsed=%.0f ms", time.Since(start).Seconds()*1000)

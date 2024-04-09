@@ -1,8 +1,11 @@
+//go:build windows && amd64
 // +build windows,amd64
 
 package native
 
 /*
+#include <eccodes.h>
+#
 #cgo LDFLAGS: -leccodes -lpng -laec -ljasper -lopenjp2 -lz
 */
 import "C"

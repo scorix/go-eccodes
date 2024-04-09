@@ -6,10 +6,9 @@ package native
 import "C"
 
 import (
+	"errors"
 	"io"
 	"unsafe"
-
-	"github.com/amsokol/go-errors"
 )
 
 func Ccodes_handle_new_from_index(index Ccodes_index) (Ccodes_handle, error) {
@@ -27,9 +26,7 @@ func Ccodes_handle_new_from_index(index Ccodes_index) (Ccodes_handle, error) {
 }
 
 func Ccodes_handle_new_from_file(ctx Ccodes_context, file CFILE, product int) (Ccodes_handle, error) {
-	var cProduct C.int
-
-	cProduct = C.int(product)
+	cProduct := C.int(product)
 
 	var err Cint
 	cError := (*C.int)(unsafe.Pointer(&err))

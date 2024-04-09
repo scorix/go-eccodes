@@ -1,28 +1,38 @@
 # go-eccodes
+
 Go wrapper for [ecCodes](https://software.ecmwf.int/wiki/display/ECC/ecCodes+Home)
 
 ## Examples
-[https://github.com/amsokol/go-eccodes/tree/master/cmd](https://github.com/amsokol/go-eccodes/tree/master/cmd)
+
+[https://github.com/scorix/go-eccodes/tree/master/cmd](https://github.com/scorix/go-eccodes/tree/master/cmd)
 
 - [go-eccodes](#go-eccodes)
-    - [Build and install ecCodes C library](#build-and-install-eccodes-c-library)
-        - [Build and install ecCodes C library for Linux](#build-and-install-eccodes-c-library-for-linux)
-            - [Install development tools](#install-development-tools)
-            - [Build and install `zlib`](#build-and-install-zlib)
-            - [Build and install `libpng`](#build-and-install-libpng)
-            - [Build and install `libaec`](#build-and-install-libaec)
-            - [Build end install `libjpeg`](#build-end-install-libjpeg)
-            - [Build end install `libopenjpeg2`](#build-end-install-libopenjpeg2)
-            - [Build end install `libjasper`](#build-end-install-libjasper)
-            - [Build end install `libeccodes`](#build-end-install-libeccodes)
-        - [Build and install ecCodes C library for Windows (using MSYS2/MINGW64)](#build-and-install-eccodes-c-library-for-windows-using-msys2mingw64)
-            - [Install `MSYS2`](#install-msys2)
-            - [Install Mingw-w64 (run `MSYS2 MinGW 64-bit` shell)](#install-mingw-w64-run-msys2-mingw-64-bit-shell)
-            - [Install ecCodes dependencies (run `MSYS2 MinGW 64-bit` shell)](#install-eccodes-dependencies-run-msys2-mingw-64-bit-shell)
-            - [Build and install `libaec`](#build-and-install-libaec)
-            - [Build end install `libeccodes`](#build-end-install-libeccodes)
+  - [Examples](#examples)
+  - [Build and install ecCodes C library](#build-and-install-eccodes-c-library)
+    - [Build and install ecCodes C library for Mac OS X](#build-and-install-eccodes-c-library-for-mac-os-x)
+    - [Build and install ecCodes C library for Linux](#build-and-install-eccodes-c-library-for-linux)
+      - [Install development tools](#install-development-tools)
+      - [Build and install `zlib`](#build-and-install-zlib)
+      - [Build and install `libpng`](#build-and-install-libpng)
+      - [Build and install `libaec`](#build-and-install-libaec)
+      - [Build end install `libjpeg`](#build-end-install-libjpeg)
+      - [Build end install `libopenjpeg2`](#build-end-install-libopenjpeg2)
+      - [Build end install `libjasper`](#build-end-install-libjasper)
+      - [Build end install `libeccodes`](#build-end-install-libeccodes)
+    - [Build and install ecCodes C library for Windows (using MSYS2/MINGW64)](#build-and-install-eccodes-c-library-for-windows-using-msys2mingw64)
+      - [Install `MSYS2`](#install-msys2)
+      - [Install Mingw-w64 (run `MSYS2 MinGW 64-bit` shell)](#install-mingw-w64-run-msys2-mingw-64-bit-shell)
+      - [Install ecCodes dependencies (run `MSYS2 MinGW 64-bit` shell)](#install-eccodes-dependencies-run-msys2-mingw-64-bit-shell)
+      - [Build and install `libaec`](#build-and-install-libaec-1)
+      - [Build end install `libeccodes`](#build-end-install-libeccodes-1)
 
 ## Build and install ecCodes C library
+
+### Build and install ecCodes C library for Mac OS X
+
+```bash
+brew install eccodes
+```
 
 ### Build and install ecCodes C library for Linux
 

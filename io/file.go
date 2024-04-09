@@ -4,8 +4,8 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/amsokol/go-eccodes/debug"
-	"github.com/amsokol/go-eccodes/native"
+	"github.com/scorix/go-eccodes/debug"
+	"github.com/scorix/go-eccodes/native"
 )
 
 type File interface {
@@ -16,7 +16,7 @@ type File interface {
 
 type file struct {
 	debugID string
-	file     native.CFILE
+	file    native.CFILE
 }
 
 func OpenFile(path string, mode string) (File, error) {
