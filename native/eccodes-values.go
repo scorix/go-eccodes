@@ -111,13 +111,13 @@ func Ccodes_grib_get_data(handle Ccodes_handle) (latitudes []float64, longitudes
 		return nil, nil, nil, fmt.Errorf("failed to get long value of '%s': %w", ParameterNumberOfPoints, err)
 	}
 
-	latitudes = make([]float64, size)
+	latitudes = make([]Cdouble, size)
 	cLatitudes := (*C.double)(unsafe.Pointer(&latitudes[0]))
 
-	longitudes = make([]float64, size)
+	longitudes = make([]Cdouble, size)
 	cLongitudes := (*C.double)(unsafe.Pointer(&longitudes[0]))
 
-	values = make([]float64, size)
+	values = make([]Cdouble, size)
 	cValues := (*C.double)(unsafe.Pointer(&values[0]))
 
 	res := C.codes_grib_get_data((*C.codes_handle)(handle), cLatitudes, cLongitudes, cValues)
@@ -152,4 +152,38 @@ func Ccodes_grib_get_data_unsafe(handle Ccodes_handle) (latitudes unsafe.Pointer
 	}
 
 	return latitudes, longitudes, values, nil
+}
+
+func Ccodes_grib_nearest_find(nearest Ccodes_nearest, handle Ccodes_handle, latitude float64, longitude float64) (outLats []float64, outLons []float64, values []float64, distances []float64, indexes []int32, err error) {
+	size, err := Ccodes_get_long(handle, ParameterNumberOfPoints)
+	if err != nil {
+		return nil, nil, nil, nil, nil, fmt.Errorf("failed to get long value of '%s': %w", ParameterNumberOfPoints, err)
+	}
+
+	flags := C.ulong(C.CODES_NEAREST_SAME_POINT)
+
+	outLats = make([]Cdouble, size)
+	cLatitudes := (*C.double)(unsafe.Pointer(&outLats[0]))
+
+	outLons = make([]Cdouble, size)
+	cLongitudes := (*C.double)(unsafe.Pointer(&outLons[0]))
+
+	values = make([]Cdouble, size)
+	cValues := (*C.double)(unsafe.Pointer(&values[0]))
+
+	distances = make([]Cdouble, size)
+	cDistances := (*C.double)(unsafe.Pointer(&distances[0]))
+
+	indexes = make([]Cint, size)
+	cIndexes := (*C.int)(unsafe.Pointer(&indexes[0]))
+
+	var length Culong = 4
+	cLen := (*C.ulong)(unsafe.Pointer(&length))
+
+	res := C.codes_grib_nearest_find((*C.codes_nearest)(nearest), (*C.codes_handle)(handle), C.double(latitude), C.double(longitude), flags, cLatitudes, cLongitudes, cValues, cDistances, cIndexes, cLen)
+	if res != 0 {
+		return nil, nil, nil, nil, nil, errors.New(Cgrib_get_error_message(int(res)))
+	}
+
+	return outLats, outLons, values, distances, indexes, err
 }

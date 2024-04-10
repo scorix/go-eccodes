@@ -13,7 +13,7 @@ import (
 )
 
 func main() {
-	filename := flag.String("file", "", "io path, e.g. /tmp/ARPEGE_0.1_SP1_00H12H_201709290000.grib2")
+	filename := flag.String("file", "", "io path, e.g. /tmp/dirpw_surface_1.grib2")
 
 	flag.Parse()
 

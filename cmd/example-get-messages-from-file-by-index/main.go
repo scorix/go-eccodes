@@ -5,21 +5,20 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"math"
 	"runtime/debug"
 	"time"
-	"unsafe"
 
 	codes "github.com/scorix/go-eccodes"
 )
 
 func main() {
-	filename := flag.String("file", "", "io path, e.g. /tmp/ARPEGE_0.1_SP1_00H12H_201709290000.grib2")
+	filename := flag.String("file", "", "io path, e.g. /tmp/dirpw_surface_1.grib2")
 
 	flag.Parse()
 
-	// set filter: get 'tp' variable messages
 	filter := map[string]interface{}{
-		"shortNameECMF": "tp",
+		"shortName": "dirpw",
 	}
 
 	file, err := codes.OpenFileByPathWithFilter(*filename, filter)
@@ -94,31 +93,17 @@ func process(file codes.File, n int) error {
 	}
 
 	// just to measure timing
-	lats, lons, vals, err := msg.DataUnsafe()
+	lats, lons, vals, err := msg.Data()
 	if err != nil {
 		return fmt.Errorf("failed to get data (latitudes, longitudes, values): %w", err)
 	}
-	defer lats.Free()
-	defer lons.Free()
-	defer vals.Free()
 
-	var lat, lon, val float64
 	for i := int64(0); i < size; i++ {
-		uptr := uintptr(lats.Data) + uintptr(uintptr(i)*unsafe.Sizeof(lat))
-		ptr := (*float64)(unsafe.Pointer(uptr))
-		lat = *ptr
-
-		uptr = uintptr(lons.Data) + uintptr(uintptr(i)*unsafe.Sizeof(lon))
-		ptr = (*float64)(unsafe.Pointer(uptr))
-		lon = *ptr
-
-		uptr = uintptr(vals.Data) + uintptr(uintptr(i)*unsafe.Sizeof(val))
-		ptr = (*float64)(unsafe.Pointer(uptr))
-		val = *ptr
-
-		if i < 6 {
-			log.Printf("[%fx%f]=%f", lat, lon, val)
+		if math.IsNaN(vals[i]) {
+			continue
 		}
+
+		log.Printf("(%.02f,%.02f): %.02f", lats[i], lons[i]-180, vals[i])
 	}
 
 	log.Printf("elapsed=%.0f ms", time.Since(start).Seconds()*1000)
