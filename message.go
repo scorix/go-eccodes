@@ -26,6 +26,8 @@ type Message interface {
 
 	NearestFind(latitude float64, longitude float64) (outLat float64, outLon float64, value float64, distance float64, index int32, err error)
 
+	Iterator() (Iterator, error)
+
 	Close() error
 }
 
@@ -110,6 +112,10 @@ func (m *message) DataUnsafe() (latitudes *Float64ArrayUnsafe, longitudes *Float
 		return nil, nil, nil, err
 	}
 	return newFloat64ArrayUnsafe(lats), newFloat64ArrayUnsafe(lons), newFloat64ArrayUnsafe(vals), nil
+}
+
+func (m *message) Iterator() (Iterator, error) {
+	return newIterator(m.handle)
 }
 
 func (m *message) Close() error {

@@ -64,6 +64,24 @@ func TestMessage_GetString(t *testing.T) {
 	})
 }
 
+func BenchmarkMessage_GetString(b *testing.B) {
+	f, err := io.OpenFile("test-data/dirpw_surface_1.grib2", "r")
+	require.NoError(b, err)
+	defer f.Close()
+
+	grib, err := codes.OpenFile(f)
+	require.NoError(b, err)
+
+	msg, err := grib.Next()
+	require.NoError(b, err)
+	defer msg.Close()
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		msg.GetString("shortName")
+	}
+}
+
 func BenchmarkNearestFind(b *testing.B) {
 	b.Run("without index", func(b *testing.B) {
 		f, err := io.OpenFile("test-data/dirpw_surface_1.grib2", "r")
