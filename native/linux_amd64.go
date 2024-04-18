@@ -6,7 +6,7 @@ package native
 /*
 #include <eccodes.h>
 #
-#cgo LDFLAGS: -leccodes -leccodes_memfs -lpng -laec -ljasper -lopenjp2 -lz -lm
+#cgo LDFLAGS: -leccodes
 */
 import "C"
 

@@ -15,8 +15,7 @@ type Reader interface {
 	Next() (Message, error)
 }
 
-type Writer interface {
-}
+type Writer interface{}
 
 type File interface {
 	Reader

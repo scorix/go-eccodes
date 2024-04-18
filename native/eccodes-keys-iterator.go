@@ -4,6 +4,7 @@ package native
 #include <eccodes.h>
 */
 import "C"
+
 import (
 	"errors"
 	"unsafe"
