@@ -10,8 +10,10 @@ package native
 */
 import "C"
 
-type Cint = int32
-type Clong = int64
-type Culong = uint64
-type Cdouble = float64
-type CsizeT = int64
+type (
+	Cint    = int32
+	Clong   = int64
+	Culong  = uint64
+	Cdouble = float64
+	CsizeT  = int64
+)

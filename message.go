@@ -40,7 +40,7 @@ func newMessage(h native.Ccodes_handle) Message {
 	runtime.SetFinalizer(m, messageFinalizer)
 
 	// set missing value to NaN
-	m.SetDouble(parameterMissingValue, math.NaN())
+	m.SetDouble(parameterMissingValue, math.NaN()) //nolint: errcheck
 
 	return m
 }
@@ -79,7 +79,7 @@ func (m *message) NearestFind(latitude float64, longitude float64) (outLat float
 		return 0, 0, 0, 0, 0, err
 	}
 
-	defer native.Ccodes_grib_nearest_delete(n)
+	defer native.Ccodes_grib_nearest_delete(n) //nolint: errcheck
 
 	lats, lons, values, distances, indexes, err := native.Ccodes_grib_nearest_find(n, m.handle, latitude, longitude)
 	if err != nil {
@@ -111,6 +111,7 @@ func (m *message) DataUnsafe() (latitudes *Float64ArrayUnsafe, longitudes *Float
 	if err != nil {
 		return nil, nil, nil, err
 	}
+
 	return newFloat64ArrayUnsafe(lats), newFloat64ArrayUnsafe(lons), newFloat64ArrayUnsafe(vals), nil
 }
 
@@ -120,6 +121,7 @@ func (m *message) Iterator() (Iterator, error) {
 
 func (m *message) Close() error {
 	defer func() { m.handle = nil }()
+
 	return native.Ccodes_handle_delete(m.handle)
 }
 

@@ -23,6 +23,7 @@ func Ccodes_handle_new_from_index(index Ccodes_index) (Ccodes_handle, error) {
 	if err != 0 {
 		return nil, errors.New(Cgrib_get_error_message(int(err)))
 	}
+
 	return unsafe.Pointer(h), nil
 }
 
@@ -49,5 +50,6 @@ func Ccodes_handle_delete(handle Ccodes_handle) error {
 	if err != 0 {
 		return errors.New(Cgrib_get_error_message(int(err)))
 	}
+
 	return nil
 }

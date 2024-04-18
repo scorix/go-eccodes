@@ -4,6 +4,7 @@ package native
 #include <eccodes.h>
 */
 import "C"
+
 import (
 	"errors"
 	"fmt"
@@ -12,8 +13,10 @@ import (
 	"github.com/scorix/go-eccodes/debug"
 )
 
-const MaxStringLength = 1030
-const ParameterNumberOfPoints = "numberOfDataPoints"
+const (
+	MaxStringLength         = 1030
+	ParameterNumberOfPoints = "numberOfDataPoints"
+)
 
 func Ccodes_get_long(handle Ccodes_handle, key string) (int64, error) {
 	cKey := C.CString(key)
@@ -94,14 +97,15 @@ func Ccodes_get_string(handle Ccodes_handle, key string) (string, error) {
 	}
 
 	cBytes = (*C.char)(unsafe.Pointer(&result[0]))
-	err = C.codes_get_string((*C.codes_handle)(handle), cKey, cBytes, cLength)
-	if err != 0 {
+
+	if err := C.codes_get_string((*C.codes_handle)(handle), cKey, cBytes, cLength); err != 0 {
 		return "", errors.New(Cgrib_get_error_message(int(err)))
 	}
 
 	if length == 0 {
 		return "", nil
 	}
+
 	return string(result[:length-1]), nil
 }
 
@@ -148,6 +152,7 @@ func Ccodes_grib_get_data_unsafe(handle Ccodes_handle) (latitudes unsafe.Pointer
 		Cfree(latitudes)
 		Cfree(longitudes)
 		Cfree(values)
+
 		return nil, nil, nil, errors.New(Cgrib_get_error_message(int(res)))
 	}
 
@@ -181,6 +186,7 @@ func Ccodes_grib_nearest_find(nearest Ccodes_nearest, handle Ccodes_handle, lati
 	cLen := (*C.ulong)(unsafe.Pointer(&length))
 
 	res := C.codes_grib_nearest_find((*C.codes_nearest)(nearest), (*C.codes_handle)(handle), C.double(latitude), C.double(longitude), flags, cLatitudes, cLongitudes, cValues, cDistances, cIndexes, cLen)
+
 	if res != 0 {
 		return nil, nil, nil, nil, nil, errors.New(Cgrib_get_error_message(int(res)))
 	}

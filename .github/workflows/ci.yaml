@@ -86,7 +86,6 @@ jobs:
   build:
     name: build
     runs-on: ubuntu-latest
-    if: ${{ github.ref_name == 'master' }}
     timeout-minutes: 15
     steps:
       - name: Checkout code
@@ -117,5 +116,4 @@ jobs:
         with:
           context: .
           platforms: linux/amd64
-          push: false
           tags: ${{ env.LATEST_TAG }}

@@ -10,6 +10,7 @@ var DefaultContext = Ccodes_context_get_default()
 
 func Ccodes_context_get_default() Ccodes_context {
 	ctx := C.codes_context_get_default()
+
 	return unsafe.Pointer(ctx)
 }
 
