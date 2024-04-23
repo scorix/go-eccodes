@@ -7,7 +7,7 @@ package native
 /*
 #include <eccodes.h>
 #cgo CFLAGS: -I /usr/share/eccodes/include
-#cgo LDFLAGS: -L /usr/share/eccodes/lib -leccodes -leccodes_memfs
+#cgo LDFLAGS: -L /usr/share/eccodes/lib -leccodes
 */
 import "C"
 
