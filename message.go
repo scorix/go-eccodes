@@ -116,13 +116,17 @@ func (m *message) DataUnsafe() (latitudes *Float64ArrayUnsafe, longitudes *Float
 }
 
 func (m *message) Iterator() (Iterator, error) {
+	if m.handle == nil {
+		return nil, errors.New("handle has been closed")
+	}
+
 	return newIterator(m.handle)
 }
 
 func (m *message) Close() error {
 	defer func() { m.handle = nil }()
 
-	return native.Ccodes_handle_delete(m.handle)
+	return nil
 }
 
 func messageFinalizer(m *message) {

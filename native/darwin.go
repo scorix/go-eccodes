@@ -6,7 +6,8 @@ package native
 /*
 #include <eccodes.h>
 #cgo CFLAGS: -I /opt/homebrew/include
-#cgo LDFLAGS: -L /opt/homebrew/lib -leccodes
+#cgo LDFLAGS: -L /opt/homebrew/lib
+#cgo LDFLAGS: -leccodes
 */
 import "C"
 

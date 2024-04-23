@@ -12,7 +12,7 @@ import (
 )
 
 type Reader interface {
-	Next() (Message, error)
+	Handle() (*Handle, error)
 }
 
 type Writer interface{}
@@ -21,21 +21,53 @@ type File interface {
 	Reader
 	Writer
 	Close()
+
+	isOpen() bool
 }
 
+// file
 type file struct {
 	file cio.File
-}
-
-type fileIndexed struct {
-	index native.Ccodes_index
 }
 
 // https://confluence.ecmwf.int/display/ECC/grib_copy
 var emptyFilter = map[string]any{}
 
 func OpenFile(f cio.File) (File, error) {
-	return &file{file: f}, nil
+	file := file{file: f}
+	runtime.SetFinalizer(&file, fileFinalizer)
+
+	return &file, nil
+}
+
+func (f *file) Handle() (*Handle, error) {
+	handle, err := native.Ccodes_handle_new_from_file(native.DefaultContext, f.file.Native(), native.ProductAny)
+	if errors.Is(err, io.EOF) {
+		return nil, err
+	}
+
+	if err != nil {
+		return nil, fmt.Errorf("failed create new handle from file: %w", err)
+	}
+
+	h := Handle{handle: handle}
+	runtime.SetFinalizer(&h, handleFinalizer)
+
+	return &h, nil
+}
+
+func (f *file) Close() {
+	defer func() { f.file = nil }()
+}
+
+func (f *file) isOpen() bool {
+	return f.file != nil
+}
+
+// fileIndexed
+type fileIndexed struct {
+	index native.Ccodes_index
+	ctx   native.Ccodes_context
 }
 
 func OpenFileByPathWithFilter(path string, filter map[string]any) (File, error) {
@@ -61,7 +93,8 @@ func OpenFileByPathWithFilter(path string, filter map[string]any) (File, error) 
 		}
 	}
 
-	i, err := native.Ccodes_index_new_from_file(native.DefaultContext, path, k)
+	ctx := native.Ccodes_context_get_default()
+	i, err := native.Ccodes_index_new_from_file(ctx, path, k)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create filtered index: %w", err)
 	}
@@ -101,34 +134,17 @@ func OpenFileByPathWithFilter(path string, filter map[string]any) (File, error) 
 		}
 	}
 
-	file := &fileIndexed{index: i}
-	runtime.SetFinalizer(file, fileIndexedFinalizer)
+	file := fileIndexed{index: i, ctx: ctx}
+	runtime.SetFinalizer(&file, fileFinalizer)
 
-	return file, nil
-}
-
-func (f *file) Next() (Message, error) {
-	handle, err := native.Ccodes_handle_new_from_file(native.DefaultContext, f.file.Native(), native.ProductAny)
-	if errors.Is(err, io.EOF) {
-		return nil, err
-	}
-
-	if err != nil {
-		return nil, fmt.Errorf("failed create new handle from file: %w", err)
-	}
-
-	return newMessage(handle), nil
-}
-
-func (f *file) Close() {
-	f.file = nil
+	return &file, nil
 }
 
 func (f *fileIndexed) isOpen() bool {
 	return f.index != nil
 }
 
-func (f *fileIndexed) Next() (Message, error) {
+func (f *fileIndexed) Handle() (*Handle, error) {
 	handle, err := native.Ccodes_handle_new_from_index(f.index)
 	if errors.Is(err, io.EOF) {
 		return nil, err
@@ -138,17 +154,24 @@ func (f *fileIndexed) Next() (Message, error) {
 		return nil, fmt.Errorf("failed to create handle from index: %w", err)
 	}
 
-	return newMessage(handle), nil
+	h := Handle{handle: handle}
+	runtime.SetFinalizer(&h, handleFinalizer)
+
+	return &h, nil
 }
 
 func (f *fileIndexed) Close() {
 	if f.isOpen() {
-		defer func() { f.index = nil }()
+		defer func() {
+			f.index = nil
+			f.ctx = nil
+		}()
 		native.Ccodes_index_delete(f.index)
+		native.Ccodes_context_delete(f.ctx)
 	}
 }
 
-func fileIndexedFinalizer(f *fileIndexed) {
+func fileFinalizer(f File) {
 	if f.isOpen() {
 		debug.MemoryLeakLogger.Print("file is not closed")
 		f.Close()

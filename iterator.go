@@ -55,6 +55,11 @@ func (it *iterator) isOpen() bool {
 
 func (it *iterator) Close() error {
 	defer func() { it.it = nil }()
+
+	if !it.isOpen() {
+		return nil
+	}
+
 	return native.Ccodes_grib_iterator_delete(it.it)
 }
 

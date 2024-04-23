@@ -1,6 +1,7 @@
 package io
 
 import (
+	"fmt"
 	"runtime"
 	"strings"
 
@@ -22,7 +23,7 @@ type file struct {
 func OpenFile(path string, mode string) (File, error) {
 	fp, err := native.Cfopen(path, mode)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("open file: %w", err)
 	}
 
 	f := &file{file: fp, debugID: strings.Join([]string{"file=", path, "', mode='", mode, "'"}, "")}

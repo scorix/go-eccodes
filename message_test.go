@@ -17,8 +17,11 @@ func TestMessage_NearestFind(t *testing.T) {
 	grib, err := codes.OpenFile(f)
 	require.NoError(t, err)
 
-	msg, err := grib.Next()
+	handle, err := grib.Handle()
 	require.NoError(t, err)
+	defer handle.Close()
+
+	msg := handle.Message()
 	defer msg.Close()
 
 	lat, lon, val, _, _, err := msg.NearestFind(77.25, 10)
@@ -38,8 +41,11 @@ func TestMessage_GetString(t *testing.T) {
 		grib, err := codes.OpenFile(f)
 		require.NoError(t, err)
 
-		msg, err := grib.Next()
+		handle, err := grib.Handle()
 		require.NoError(t, err)
+		defer handle.Close()
+
+		msg := handle.Message()
 		defer msg.Close()
 
 		s, err := msg.GetString("time")
@@ -49,12 +55,15 @@ func TestMessage_GetString(t *testing.T) {
 	})
 
 	t.Run("with index", func(t *testing.T) {
-		f, err := codes.OpenFileByPathWithFilter("test-data/dirpw_surface_1.grib2", map[string]any{"shortName": "dirpw"})
+		grib, err := codes.OpenFileByPathWithFilter("test-data/dirpw_surface_1.grib2", map[string]any{"shortName": "dirpw"})
 		require.NoError(t, err)
-		defer f.Close()
+		defer grib.Close()
 
-		msg, err := f.Next()
+		handle, err := grib.Handle()
 		require.NoError(t, err)
+		defer handle.Close()
+
+		msg := handle.Message()
 		defer msg.Close()
 
 		s, err := msg.GetString("time")
@@ -72,8 +81,11 @@ func BenchmarkMessage_GetString(b *testing.B) {
 	grib, err := codes.OpenFile(f)
 	require.NoError(b, err)
 
-	msg, err := grib.Next()
+	handle, err := grib.Handle()
 	require.NoError(b, err)
+	defer handle.Close()
+
+	msg := handle.Message()
 	defer msg.Close()
 
 	b.ResetTimer()
@@ -91,8 +103,11 @@ func BenchmarkNearestFind(b *testing.B) {
 		grib, err := codes.OpenFile(f)
 		require.NoError(b, err)
 
-		msg, err := grib.Next()
+		handle, err := grib.Handle()
 		require.NoError(b, err)
+		defer handle.Close()
+
+		msg := handle.Message()
 		defer msg.Close()
 
 		for i := 0; i < b.N; i++ {
@@ -105,8 +120,11 @@ func BenchmarkNearestFind(b *testing.B) {
 		require.NoError(b, err)
 		defer grib.Close()
 
-		msg, err := grib.Next()
+		handle, err := grib.Handle()
 		require.NoError(b, err)
+		defer handle.Close()
+
+		msg := handle.Message()
 		defer msg.Close()
 
 		for i := 0; i < b.N; i++ {
@@ -123,8 +141,11 @@ func BenchmarkData(b *testing.B) {
 	grib, err := codes.OpenFile(f)
 	require.NoError(b, err)
 
-	msg, err := grib.Next()
+	handle, err := grib.Handle()
 	require.NoError(b, err)
+	defer handle.Close()
+
+	msg := handle.Message()
 	defer msg.Close()
 
 	for i := 0; i < b.N; i++ {

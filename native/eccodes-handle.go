@@ -7,6 +7,7 @@ import "C"
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"unsafe"
 )
@@ -35,7 +36,7 @@ func Ccodes_handle_new_from_file(ctx Ccodes_context, file CFILE, product int) (C
 
 	h := C.codes_handle_new_from_file((*C.grib_context)(ctx), (*C.FILE)(file), C.ProductKind(cProduct), cError)
 	if err != 0 {
-		return nil, errors.New(Cgrib_get_error_message(int(err)))
+		return nil, fmt.Errorf("codes_handle_new_from_file: %s", Cgrib_get_error_message(int(err)))
 	}
 
 	if h == nil {
